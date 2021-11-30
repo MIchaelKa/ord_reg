@@ -1,0 +1,7 @@
+defaults:
+  - train: train
+  - model: base
+  - optimizer: adam
+  - scheduler: base
+
+seed: 42

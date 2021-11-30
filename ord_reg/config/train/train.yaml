@@ -1,0 +1,7 @@
+data_flag: retinamnist
+download: true
+batch_size_train: 32
+batch_size_val: 32
+dataloader_workers: 0
+num_epochs: 5
+save_checkpoint: false
