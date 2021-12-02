@@ -16,6 +16,20 @@ def get_data_transform():
     ])
     return transform
 
+import random
+import numpy as np
+import torch
+
+def init_fn(worker_id):
+    # print(f'init_fn: {worker_id}')
+    seed = 42 + worker_id
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+
+# worker_init_fn=init_fn
+
 def get_train_data(cfg: DictConfig):
 
     info = INFO[cfg.train.data_flag]
@@ -34,19 +48,24 @@ def get_train_data(cfg: DictConfig):
     logger.info(f'Dataset size, train: {len(train_dataset)}, valid: {len(val_dataset)}')
 
     dataloader_workers = cfg.train.dataloader_workers
+    pin_memory = False
 
     train_loader = data.DataLoader(
         dataset=train_dataset,
         batch_size=cfg.train.batch_size_train,
         shuffle=True,
-        num_workers=dataloader_workers
+        num_workers=dataloader_workers,
+        pin_memory=pin_memory,
+        # worker_init_fn=init_fn
     )
 
     val_loader = data.DataLoader(
         dataset=val_dataset,
         batch_size=cfg.train.batch_size_val,
         shuffle=False,
-        num_workers=dataloader_workers
+        num_workers=dataloader_workers,
+        pin_memory=pin_memory,
+        # worker_init_fn=init_fn
     )
 
     logger.info(f'Dataloader size, train: {len(train_loader)}, val: {len(val_loader)}')

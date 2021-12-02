@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 def get_device():
     if torch.cuda.is_available():       
         device = torch.device("cuda")
-        logger.info('There are %d GPU(s) available.' % torch.cuda.device_count())
-        logger.info('We will use the GPU:', torch.cuda.get_device_name(0))
+        logger.info('There are {} GPU(s) available.'.format(torch.cuda.device_count()))
+        logger.info('We will use the GPU: {}'.format(torch.cuda.get_device_name(0)))
     else:
         device = torch.device("cpu")
         logger.info('No GPU available, using the CPU instead.')

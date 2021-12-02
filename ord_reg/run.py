@@ -29,7 +29,7 @@ def run_training(cfg: DictConfig):
     trainer = Trainer(cfg, model, device, criterion, optimizer, scheduler, evaluator)
     trainer.fit(train_loader, val_loader, cfg.train.num_epochs)
 
-    trainer.predict(val_loader)
+    # trainer.predict(val_loader)
 
     # test_loader = get_test_data(cfg)
     # trainer.predict(test_loader)

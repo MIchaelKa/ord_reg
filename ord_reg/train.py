@@ -55,14 +55,18 @@ class Trainer():
         
         self.model.train()
 
-        print_every=10
-        verbose=True
+        print_every=-1
 
         for iter_num, (x_batch, y_batch) in enumerate(train_loader):
             x_batch = x_batch.to(self.device, dtype=torch.float32)
             y_batch = y_batch.to(self.device, dtype=torch.long)
 
             y_batch = y_batch.squeeze()
+
+            # if iter_num == 1:
+            #     print(y_batch)
+            #     print(x_batch)
+            #     print(self.model.fc.weight)
 
             output = self.model(x_batch)
             loss = self.criterion(output, y_batch)
@@ -75,7 +79,7 @@ class Trainer():
 
             self.writer.add_scalar('train/loss', loss_item, epoch*len(train_loader)+iter_num)
 
-            if verbose and print_every > 0 and iter_num % print_every == 0:
+            if print_every > 0 and iter_num % print_every == 0:
                 logger.info('iter: {:>4d}, loss = {:.5f}'.format(iter_num, loss_item))
 
     def predict(self, loader):
@@ -112,6 +116,8 @@ class Trainer():
 
         y_prob = outputs.softmax(dim=-1)
         y_pred = torch.argmax(y_prob, 1)
+
+        y_prob = y_prob.detach().cpu().numpy()
 
         # print(outputs.shape, y_true.shape, y_prob.shape, y_pred.shape)
 
