@@ -25,6 +25,8 @@ class Trainer():
 
     def fit(self, train_loader, val_loader, num_epochs):
 
+        logger.info('Start training...')
+
         val_best_score = 0
         val_best_epoch = 0
 
