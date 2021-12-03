@@ -6,6 +6,7 @@ defaults:
 
 seed: 42
 save_checkpoint: false
+experiment_name: name
 criterion:
   _target_: torch.nn.BCEWithLogitsLoss
 evaluator:

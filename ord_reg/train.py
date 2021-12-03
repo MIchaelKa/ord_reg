@@ -49,7 +49,7 @@ class Trainer():
         
         self.model.train()
 
-        print_every=-1
+        print_every=-1 # TODO: remove?
 
         for iter_num, (x_batch, y_batch) in enumerate(train_loader):
             x_batch = x_batch.to(self.device, dtype=torch.float32)

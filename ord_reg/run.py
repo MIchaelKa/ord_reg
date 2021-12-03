@@ -28,8 +28,9 @@ def run_training(cfg: DictConfig):
     optimizer = instantiate(cfg.optimizer, params=model.parameters())
     scheduler = instantiate(cfg.scheduler, optimizer=optimizer)
 
+    experiment_name = f'{cfg.experiment_name}_{cfg.model.model_name}_lr:{cfg.optimizer.lr}'
     current_time = datetime.now().strftime('%b%d_%H-%M-%S')
-    writer = SummaryWriter(f'../../runs/{current_time}/')
+    writer = SummaryWriter(f'../../runs/{experiment_name}_{current_time}/')
 
     evaluator = instantiate(cfg.evaluator, writer=writer)
 

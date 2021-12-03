@@ -26,23 +26,14 @@ class BaseEvaluator():
 
 class BaselineEvaluator(BaseEvaluator):
     def evaluate(self, epoch, outputs, y_true):
-        # print(outputs.shape, y_true.shape)
         y_prob = outputs.softmax(dim=-1)
         y_pred = torch.argmax(y_prob, 1)
-
-        # print(y_pred.shape, y_prob.shape, y_true.shape)
 
         return self.compute_score(epoch, y_true, y_pred)
 
 class LabelBinEvaluator(BaseEvaluator):
     def evaluate(self, epoch, outputs, y_true):
-        # print(outputs.shape, y_true.shape)
-
         y_pred = outputs.sigmoid().sum(1).round()
         y_true = y_true.sum(1)
-
-        # print(y_pred.shape, y_true.shape)
-        # print(y_pred[:10])
-        # print(y_true[:10])
 
         return self.compute_score(epoch, y_true, y_pred)
