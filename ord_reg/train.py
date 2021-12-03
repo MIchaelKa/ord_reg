@@ -1,27 +1,19 @@
 import torch
 import numpy as np
 
-from datetime import datetime
-
 import logging
 logger = logging.getLogger(__name__)
 
-from torch.utils.tensorboard import SummaryWriter
-
 class Trainer():
-    def __init__(self, config, model, device, criterion, optimizer, scheduler, evaluator):
+    def __init__(self, config, model, device, criterion, optimizer, scheduler, evaluator, writer):
         self.config = config
         self.model = model
         self.device = device
         self.criterion = criterion
         self.optimizer = optimizer
         self.scheduler = scheduler
-
-        # TODO: what about test?
         self.evaluator = evaluator
- 
-        current_time = datetime.now().strftime('%b%d_%H-%M-%S')
-        self.writer = SummaryWriter(f'../../runs/{current_time}/')
+        self.writer = writer
 
     def fit(self, train_loader, val_loader, num_epochs):
 
@@ -38,13 +30,13 @@ class Trainer():
                 val_best_score = val_score
                 val_best_epoch = epoch
 
-                if self.config.train.save_checkpoint:
+                if self.config.save_checkpoint:
                     model_save_name = f'{self.config.model.model_name}.pth'
                     torch.save(self.model.state_dict(), model_save_name)
                 
             self.update_scheduler(epoch)
 
-        logger.info('best epoch {:>2d}, score = {:.5f}'.format(val_best_epoch, val_best_score))
+        logger.info('Best epoch: {:>2d}, score = {:.5f}'.format(val_best_epoch, val_best_score))
 
         self.writer.close()
 
@@ -61,16 +53,10 @@ class Trainer():
 
         for iter_num, (x_batch, y_batch) in enumerate(train_loader):
             x_batch = x_batch.to(self.device, dtype=torch.float32)
-            y_batch = y_batch.to(self.device, dtype=torch.long)
-
-            y_batch = y_batch.squeeze()
-
-            # if iter_num == 1:
-            #     print(y_batch)
-            #     print(x_batch)
-            #     print(self.model.fc.weight)
+            y_batch = y_batch.to(self.device)
 
             output = self.model(x_batch)
+
             loss = self.criterion(output, y_batch)
             
             self.optimizer.zero_grad()
@@ -101,9 +87,7 @@ class Trainer():
         with torch.no_grad():
             for _, (x_batch, y_batch) in enumerate(val_loader):
                 x_batch = x_batch.to(self.device, dtype=torch.float32)
-                y_batch = y_batch.to(self.device, dtype=torch.long)
-
-                # y_batch = y_batch.squeeze()
+                y_batch = y_batch.to(self.device)
                 
                 output = self.model(x_batch)
                 loss = self.criterion(output, y_batch.squeeze())
@@ -116,27 +100,9 @@ class Trainer():
         outputs = torch.cat(outputs, 0)
         y_true = torch.cat(y_true, 0)
 
-        y_prob = outputs.softmax(dim=-1)
-        y_pred = torch.argmax(y_prob, 1)
+        score = self.evaluator.evaluate(epoch, outputs, y_true)
 
-        y_prob = y_prob.detach().cpu().numpy()
-
-        # print(outputs.shape, y_true.shape, y_prob.shape, y_pred.shape)
-
-        auc, acc = self.evaluator.evaluate(y_prob)
-
-        logger.info('epoch: {:>4d}, auc = {:.5f}, acc = {:.5f}'.format(epoch, auc, acc))
-
-        # correct_samples = torch.sum(y_pred == y_true.squeeze())
-        # print(correct_samples, y_pred.shape[0])
-        # accuracy = float(correct_samples) / y_pred.shape[0]
-        # print(accuracy)
-
-        self.writer.add_scalar('val/acc', acc, epoch)
-        self.writer.add_scalar('val/auc', auc, epoch)
         self.writer.add_scalar('val/loss', np.mean(losses), epoch)
-
-        score = auc
-            
+      
         return score
 

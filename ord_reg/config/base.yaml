@@ -5,3 +5,8 @@ defaults:
   - scheduler: base
 
 seed: 42
+save_checkpoint: false
+criterion:
+  _target_: torch.nn.BCEWithLogitsLoss
+evaluator:
+  _target_: eval.LabelBinEvaluator

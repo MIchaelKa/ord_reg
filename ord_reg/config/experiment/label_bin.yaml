@@ -1,0 +1,14 @@
+# @package _global_
+
+train:
+  dataset:
+    _target_: dataset.LabelBinRetinaMNIST
+
+criterion:
+  _target_: torch.nn.BCEWithLogitsLoss
+
+evaluator:
+  _target_: eval.LabelBinEvaluator
+
+model:
+  out_dim: 4

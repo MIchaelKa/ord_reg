@@ -5,28 +5,35 @@ from train import Trainer
 from utils import seed_everything, get_device
 from data import get_train_data, get_test_data
 
+from datetime import datetime
+
+from torch.utils.tensorboard import SummaryWriter
+
 import logging
 logger = logging.getLogger(__name__)
 
-import torch.nn as nn
 
 from medmnist import Evaluator
+
 
 def run_training(cfg: DictConfig):
     
     seed_everything(cfg.seed)
     device = get_device()
 
-    n_classes, train_loader, val_loader = get_train_data(cfg)
- 
-    model = instantiate(cfg.model, n_classes=n_classes).to(device)
-    criterion = nn.CrossEntropyLoss()
+    train_loader, val_loader = get_train_data(cfg)
+
+    model = instantiate(cfg.model).to(device)
+    criterion = instantiate(cfg.criterion)
     optimizer = instantiate(cfg.optimizer, params=model.parameters())
     scheduler = instantiate(cfg.scheduler, optimizer=optimizer)
 
-    evaluator = Evaluator(cfg.train.data_flag, split='val')
+    current_time = datetime.now().strftime('%b%d_%H-%M-%S')
+    writer = SummaryWriter(f'../../runs/{current_time}/')
 
-    trainer = Trainer(cfg, model, device, criterion, optimizer, scheduler, evaluator)
+    evaluator = instantiate(cfg.evaluator, writer=writer)
+
+    trainer = Trainer(cfg, model, device, criterion, optimizer, scheduler, evaluator, writer)
     trainer.fit(train_loader, val_loader, cfg.train.num_epochs)
 
     # trainer.predict(val_loader)

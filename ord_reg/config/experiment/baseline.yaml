@@ -1,0 +1,14 @@
+# @package _global_
+
+train:
+  dataset:
+    _target_: dataset.BaselineRetinaMNIST
+
+criterion:
+  _target_: torch.nn.CrossEntropyLoss
+
+evaluator:
+  _target_: eval.BaselineEvaluator
+
+model:
+  out_dim: 5

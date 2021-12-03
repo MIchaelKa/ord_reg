@@ -6,6 +6,8 @@ from omegaconf import DictConfig
 import torch.utils.data as data
 import torchvision.transforms as transforms
 
+from hydra.utils import instantiate
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -16,34 +18,12 @@ def get_data_transform():
     ])
     return transform
 
-import random
-import numpy as np
-import torch
-
-def init_fn(worker_id):
-    # print(f'init_fn: {worker_id}')
-    seed = 42 + worker_id
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-
-# worker_init_fn=init_fn
-
 def get_train_data(cfg: DictConfig):
-
-    info = INFO[cfg.train.data_flag]
-    n_classes = len(info['label'])
-
-    DataClass = getattr(medmnist, info['python_class'])
-
     data_transform = get_data_transform()
-
     download = cfg.train.download
-    
-    train_dataset = DataClass(split='train', transform=data_transform, download=download)
-    val_dataset = DataClass(split='val', transform=data_transform, download=download)
-    test_dataset = DataClass(split='test', transform=data_transform, download=download)
+
+    train_dataset = instantiate(cfg.train.dataset, split='train', transform=data_transform, download=download)
+    val_dataset = instantiate(cfg.train.dataset, split='val', transform=data_transform, download=download)
 
     logger.info(f'Dataset size, train: {len(train_dataset)}, valid: {len(val_dataset)}')
 
@@ -55,8 +35,7 @@ def get_train_data(cfg: DictConfig):
         batch_size=cfg.train.batch_size_train,
         shuffle=True,
         num_workers=dataloader_workers,
-        pin_memory=pin_memory,
-        # worker_init_fn=init_fn
+        pin_memory=pin_memory
     )
 
     val_loader = data.DataLoader(
@@ -64,13 +43,12 @@ def get_train_data(cfg: DictConfig):
         batch_size=cfg.train.batch_size_val,
         shuffle=False,
         num_workers=dataloader_workers,
-        pin_memory=pin_memory,
-        # worker_init_fn=init_fn
+        pin_memory=pin_memory
     )
 
     logger.info(f'Dataloader size, train: {len(train_loader)}, val: {len(val_loader)}')
 
-    return n_classes, train_loader, val_loader
+    return train_loader, val_loader
 
 def get_test_data(cfg: DictConfig):
     info = INFO[cfg.train.data_flag]

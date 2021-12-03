@@ -1,3 +1,4 @@
 _target_: model.ImageModel
 model_name: resnet18
 pretrained: true
+out_dim: 4
