@@ -74,7 +74,7 @@ class Trainer():
         model_save_name = f'{self.config.model.model_name}.pth'
         self.model.load_state_dict(torch.load(model_save_name))
         self.model.eval()
-        self.val_epoch(0, loader)
+        self.val_epoch(-1, loader)
 
     def val_epoch(self, epoch, val_loader):
 

@@ -11,7 +11,17 @@ from hydra.utils import instantiate
 import logging
 logger = logging.getLogger(__name__)
 
-def get_data_transform():
+def get_train_transform():
+    transform = transforms.Compose([
+        # transforms.RandomHorizontalFlip(p=0.5),
+        # transforms.Pad(4),
+        # transforms.RandomCrop(28),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[.5], std=[.5])
+    ])
+    return transform
+
+def get_test_transform():
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(mean=[.5], std=[.5])
@@ -19,11 +29,21 @@ def get_data_transform():
     return transform
 
 def get_train_data(cfg: DictConfig):
-    data_transform = get_data_transform()
+
     download = cfg.train.download
 
-    train_dataset = instantiate(cfg.train.dataset, split='train', transform=data_transform, download=download)
-    val_dataset = instantiate(cfg.train.dataset, split='val', transform=data_transform, download=download)
+    train_dataset = instantiate(
+        cfg.train.dataset,
+        split='train',
+        transform=get_train_transform(),
+        download=download
+    )
+    val_dataset = instantiate(
+        cfg.train.dataset,
+        split='val',
+        transform=get_test_transform(),
+        download=download
+    )
 
     logger.info(f'Dataset size, train: {len(train_dataset)}, valid: {len(val_dataset)}')
 
@@ -51,11 +71,13 @@ def get_train_data(cfg: DictConfig):
     return train_loader, val_loader
 
 def get_test_data(cfg: DictConfig):
-    info = INFO[cfg.train.data_flag]
-    DataClass = getattr(medmnist, info['python_class'])
 
-    data_transform = get_data_transform()
-    test_dataset = DataClass(split='test', transform=data_transform, download=cfg.train.download)
+    test_dataset = instantiate(
+        cfg.train.dataset,
+        split='test',
+        transform=get_test_transform(),
+        download=cfg.train.download
+    )
 
     logger.info(f'Dataset size, test: {len(test_dataset)}')
 

@@ -19,8 +19,9 @@ class BaseEvaluator():
 
         logger.info('Epoch: {:>2d}, acc = {:.5f}, qwk = {:.5f}'.format(epoch, acc, qwk))
 
-        self.writer.add_scalar('val/acc', acc, epoch)
-        self.writer.add_scalar('val/qwk', qwk, epoch)
+        if epoch != -1:
+            self.writer.add_scalar('val/acc', acc, epoch)
+            self.writer.add_scalar('val/qwk', qwk, epoch)
 
         return qwk
 
@@ -28,7 +29,7 @@ class BaselineEvaluator(BaseEvaluator):
     def evaluate(self, epoch, outputs, y_true):
         y_prob = outputs.softmax(dim=-1)
         y_pred = torch.argmax(y_prob, 1)
-
+        
         return self.compute_score(epoch, y_true, y_pred)
 
 class LabelBinEvaluator(BaseEvaluator):
