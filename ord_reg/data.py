@@ -30,22 +30,18 @@ def get_test_transform():
 
 def get_train_data(cfg: DictConfig):
 
-    download = cfg.train.download
-
     train_dataset = instantiate(
         cfg.train.dataset,
         split='train',
-        transform=get_train_transform(),
-        download=download
+        transform=get_train_transform()
     )
     val_dataset = instantiate(
         cfg.train.dataset,
         split='val',
-        transform=get_test_transform(),
-        download=download
+        transform=get_test_transform()
     )
 
-    logger.info(f'Dataset size, train: {len(train_dataset)}, valid: {len(val_dataset)}')
+    logger.info(f'Dataset size, train: {len(train_dataset)}, val: {len(val_dataset)}')
 
     dataloader_workers = cfg.train.dataloader_workers
     pin_memory = False
@@ -75,8 +71,7 @@ def get_test_data(cfg: DictConfig):
     test_dataset = instantiate(
         cfg.train.dataset,
         split='test',
-        transform=get_test_transform(),
-        download=cfg.train.download
+        transform=get_test_transform()
     )
 
     logger.info(f'Dataset size, test: {len(test_dataset)}')

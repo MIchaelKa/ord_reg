@@ -1,4 +1,7 @@
-_target_: model.ImageModel
-model_name: resnet18
-pretrained: true
-out_dim: 4
+encoder:
+  model_name: resnet18
+  pretrained: true
+
+last_fc:
+  _target_: torch.nn.Linear
+  out_features: 4

@@ -1,6 +1,6 @@
 # @package _global_
 
-experiment_name: lb
+experiment_name: cr
 
 train:
   dataset:
@@ -14,4 +14,5 @@ evaluator:
 
 model:
   last_fc:
+    _target_: layer.CoralLayer
     out_features: 4

@@ -1,7 +1,7 @@
 data_flag: retinamnist
-download: true
 dataset:
   _target_: dataset.LabelBinRetinaMNIST
+  download: true
 
 batch_size_train: 32
 batch_size_val: 32

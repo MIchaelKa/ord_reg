@@ -14,7 +14,7 @@ class BaselineRetinaMNIST(medmnist.dataset.RetinaMNIST):
 
 class LabelBinRetinaMNIST(medmnist.dataset.RetinaMNIST):
     '''
-    Implements label binning for RetinaMNIST
+    Implements label binning for RetinaMNIST dataset.
 
     Preprocess the target data as the following:
         Grade – 0: label = [0,0,0,0]

@@ -13,4 +13,5 @@ evaluator:
   _target_: eval.BaselineEvaluator
 
 model:
-  out_dim: 5
+  last_fc:
+    out_features: 5
