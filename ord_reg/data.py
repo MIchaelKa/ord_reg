@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 def get_train_transform():
     transform = transforms.Compose([
-        # transforms.RandomHorizontalFlip(p=0.5),
+        # transforms.RandomHorizontalFlip(),
+        # transforms.RandomVerticalFlip(),
         # transforms.Pad(4),
         # transforms.RandomCrop(28),
         transforms.ToTensor(),

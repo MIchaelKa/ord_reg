@@ -15,6 +15,9 @@ class Trainer():
         self.evaluator = evaluator
         self.writer = writer
 
+        self.model_save_name = f'{self.config.model.encoder.model_name}.pth'
+        self.print_every = -1 # for debug purposes
+
     def fit(self, train_loader, val_loader, num_epochs):
 
         logger.info('Start training...')
@@ -24,15 +27,20 @@ class Trainer():
 
         for epoch in range(num_epochs):
             self.train_epoch(epoch, train_loader)
-            val_score = self.val_epoch(epoch, val_loader)
+            loss, acc, qwk, _ = self.val_epoch(val_loader)
 
-            if val_score > val_best_score:
-                val_best_score = val_score
+            self.writer.add_scalar('val/acc', acc, epoch)
+            self.writer.add_scalar('val/qwk', qwk, epoch)
+            self.writer.add_scalar('val/loss', loss, epoch)
+
+            logger.info('Epoch: {:>2d}, acc = {:.5f}, qwk = {:.5f}'.format(epoch, acc, qwk))
+
+            if qwk > val_best_score:
+                val_best_score = qwk
                 val_best_epoch = epoch
 
                 if self.config.save_checkpoint:
-                    model_save_name = f'{self.config.model.model_name}.pth'
-                    torch.save(self.model.state_dict(), model_save_name)
+                    torch.save(self.model.state_dict(), self.model_save_name)
                 
             self.update_scheduler(epoch)
 
@@ -49,7 +57,7 @@ class Trainer():
         
         self.model.train()
 
-        print_every=-1 # TODO: remove?
+        iter_start = epoch * len(train_loader)
 
         for iter_num, (x_batch, y_batch) in enumerate(train_loader):
             x_batch = x_batch.to(self.device, dtype=torch.float32)
@@ -65,18 +73,20 @@ class Trainer():
 
             loss_item = loss.item()
 
-            self.writer.add_scalar('train/loss', loss_item, epoch*len(train_loader)+iter_num)
+            self.writer.add_scalar('train/loss', loss_item, iter_start+iter_num)
 
-            if print_every > 0 and iter_num % print_every == 0:
+            if self.print_every > 0 and iter_num % self.print_every == 0:
                 logger.info('iter: {:>4d}, loss = {:.5f}'.format(iter_num, loss_item))
 
     def predict(self, loader):
-        model_save_name = f'{self.config.model.model_name}.pth'
-        self.model.load_state_dict(torch.load(model_save_name))
+        self.model.load_state_dict(torch.load(self.model_save_name))
         self.model.eval()
-        self.val_epoch(-1, loader)
+        loss, acc, qwk, cm = self.val_epoch(loader)
 
-    def val_epoch(self, epoch, val_loader):
+        logger.info('[Test] loss = {:.5f}, acc = {:.5f}, qwk = {:.5f}'.format(loss, acc, qwk))
+        logger.info(f'[Test] cm:\n {cm}')
+
+    def val_epoch(self, val_loader):
 
         self.model.eval()
 
@@ -96,13 +106,11 @@ class Trainer():
                 y_true.append(y_batch)
                 losses.append(loss.item())
 
-
         outputs = torch.cat(outputs, 0)
         y_true = torch.cat(y_true, 0)
 
-        score = self.evaluator.evaluate(epoch, outputs, y_true)
+        acc, qwk, cm = self.evaluator.evaluate(outputs, y_true)
+        loss = np.mean(losses)
 
-        self.writer.add_scalar('val/loss', np.mean(losses), epoch)
-      
-        return score
+        return loss, acc, qwk, cm
 
