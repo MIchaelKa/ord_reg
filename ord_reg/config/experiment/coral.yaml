@@ -7,7 +7,9 @@ train:
     _target_: dataset.LabelBinRetinaMNIST
 
 criterion:
-  _target_: torch.nn.BCEWithLogitsLoss
+  # _target_: torch.nn.BCEWithLogitsLoss
+  _target_: loss.CoralLoss
+  
 
 evaluator:
   _target_: eval.LabelBinEvaluator
