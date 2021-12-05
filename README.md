@@ -91,6 +91,11 @@ Compute the rank from pair-wise comparisons between the input image and multiple
 
 Ordinal Regression using Noisy Pairwise Comparisons for Body Mass Index Range Estimation (https://arxiv.org/abs/1811.03268)
 
+### CORN
+From creators of CORAL 
+
+Paper (https://arxiv.org/abs/2111.08851)
+
 # Metric
 We use **Quadratic Weighted Kappa** as a performance evaluation metric. This metric is better suitable for scoring ordinal predictions since it takes into account how much our prediction further away from the actual value.
 
@@ -125,4 +130,9 @@ Inconsistency: The number of inconsistent predictions out from 400 total example
 | label_bin   | **0.5623** | 148/400 |
 | coral       | 0.543  | **0**/400 |
 
-Despite 100% consistent predictions CORAL method works not so well on this dataset. At the same time, both methods based on label binning strategy outperforms the baseline.
+Despite 100% consistent predictions CORAL method works not so well on this dataset. As mentioned in subsequent paper
+>the weight-sharing constraint could severely restrict the expressiveness of a deep neural network.
+
+To fight with this the new approach was developed by the authors of CORAL called CORN, which is the next experiment worth trying.
+
+At the same time, both methods based on label binning strategy outperforms the baseline.
