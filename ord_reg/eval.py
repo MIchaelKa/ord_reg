@@ -44,6 +44,17 @@ class LabelBinEvaluator(BaseEvaluator):
         y_true = y_true.sum(1)
         return self.compute_score(y_true, y_pred)
 
+class FirstZeroEvaluator(BaseEvaluator):
+    def evaluate(self, outputs, y_true):
+        y_prob = outputs.sigmoid()
+        self.detect_inconsistency(y_prob)
+
+        # Sum until first zero
+        y_pred = (outputs > 0).cumprod(1).sum(1)
+
+        y_true = y_true.sum(1)
+        return self.compute_score(y_true, y_pred)
+
 class CoralEvaluator(BaseEvaluator):
     def evaluate(self, outputs, y_true):
         y_prob = outputs.sigmoid()

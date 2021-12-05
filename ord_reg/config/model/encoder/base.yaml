@@ -1,0 +1,2 @@
+_target_: model.SimpleEncoder
+model_name: base

@@ -1,6 +1,5 @@
-encoder:
-  model_name: resnet18
-  pretrained: true
+defaults:
+  - encoder: timm
 
 last_fc:
   _target_: torch.nn.Linear

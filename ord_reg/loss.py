@@ -20,7 +20,17 @@ class CoralLoss(nn.Module):
     - loss : torch.tensor
         A torch.tensor containing a single loss value.
     '''
+    def __init__(self):
+        super().__init__()
+        # out_features = 4
+        # self.importance_weights = torch.arange(1, out_features + 1, 1).float() / out_features
+        # self.importance_weights = torch.tensor([0.1, 0.25, 0.9, 1.09])
+        self.importance_weights = None
+        
+
     def forward(self, input, target):
         loss = F.logsigmoid(input) * target + (F.logsigmoid(input) - input) * (1 - target)
+        if self.importance_weights is not None:
+            loss *= self.importance_weights
         loss = (-torch.sum(loss, dim=1))
         return loss.mean()

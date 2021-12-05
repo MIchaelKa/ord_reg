@@ -4,7 +4,11 @@ import torch.nn as nn
 class CoralLayer(nn.Module):
     '''
     Implements CORAL layer.
-    Look at arxiv paper for more details: https://arxiv.org/abs/1901.07884
+    To achieve rank-monotonicity and guarantee binary classifier consistency,
+    the binary tasks share the same weight parameters but have independent bias units.
+    For theoretical rank-consistency guarantees and more details look at
+    arxiv paper: https://arxiv.org/abs/1901.07884
+
     This class is an adapted version from
     https://github.com/Raschka-research-group/coral-pytorch
     
