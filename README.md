@@ -5,8 +5,9 @@ python main.py +experiment=experiment_name
 ```
 
 For the full list of available experiments look at Methods section.
+All available experiment configs located under `config/experiment/` folder.
 
-You can also change many other configs, for example: CNN encoder, learning rate, scheduler, optimizer, etc. For the full list of available configs see the base config file located under `config/base.yaml`. Some of the experiments already contain some predefined config customization.
+You can also change many other settings, for example: CNN encoder, learning rate, scheduler, optimizer, etc. For the full list of available configs see the base config file located under `config/base.yaml`. Some of the experiments already contain some predefined config customization.
 For example:
 ```
 python main.py +experiment=label_bin model.encoder.model_name=resnext50_32x4d optimizer=sgd optimizer.lr=3e-4
