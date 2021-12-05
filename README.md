@@ -57,9 +57,8 @@ Indeed this method works better in practice but still can suffer from inconsiste
 
 ### References
 
-A neural network approach to ordinal regression (https://arxiv.org/abs/0704.1028)
-
-Ordinal Regression with Multiple Output CNN for Age Estimation (https://www.cv-foundation.org/openaccess/content_cvpr_2016/app/S21-20.pdf)
+1. A neural network approach to ordinal regression (https://arxiv.org/abs/0704.1028)
+2. Ordinal Regression with Multiple Output CNN for Age Estimation (https://www.cv-foundation.org/openaccess/content_cvpr_2016/app/S21-20.pdf)
 
 ### Command
 ```
@@ -75,7 +74,7 @@ The paper also provides theoretical proves for classifier consistency which was 
 
 
 ### References
-Rank consistent ordinal regression for neural networks with application to age estimation (https://arxiv.org/abs/1901.07884)
+1. Rank consistent ordinal regression for neural networks with application to age estimation (https://arxiv.org/abs/1901.07884)
 
 ### Command
 ```
@@ -111,16 +110,19 @@ python main.py +experiment=label_bin model.model_name=resnext50_32x4d
 For the full list of available architectures visit [timm github repo](https://github.com/rwightman/pytorch-image-models)
 
 # Results
-All the experiments were perfomed using 3 different random seeds and then averading out the result. For the final evaluation we use the test dataset provided within `RetinaMNIST` dataset.
+All the experiments were performed using 3 different random seeds and then averaging out the results. For the final evaluation, we use the test dataset provided within `RetinaMNIST` dataset.
 
 The test dataset contains 400 more examples of retina fundus images.
 
 Metric: Quadratic Weighted Kappa(QWK)
+
 Inconsistency: The number of inconsistent predictions out from 400 total examples.
 
-## resnet18
+### resnet18
 | Experiment  | QWK        | Inconsistency |
 | ----------- | ---------- | --------------|
 | baseline    | 0.4989 | 388/400 |
 | label_bin   | **0.5623** | 148/400 |
 | coral       | 0.543  | **0**/400 |
+
+Despite 100% consistent predictions CORAL method works not so well on this dataset. At the same time, both methods based on label binning strategy outperforms the baseline.
