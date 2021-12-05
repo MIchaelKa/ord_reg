@@ -4,7 +4,8 @@ import numpy as np
 class BaselineRetinaMNIST(medmnist.dataset.RetinaMNIST):
     '''
     Helper class to get rid of additional dimension in the target field.
-    It helps to avoid calling squeeze() in the future and reuse the common codebase.
+    It helps to avoid calling squeeze() in the future and 
+    allows to reuse the common codebase.
     '''
     def __getitem__(self, index):
         img, target = super().__getitem__(index)
@@ -14,14 +15,12 @@ class BaselineRetinaMNIST(medmnist.dataset.RetinaMNIST):
 
 class LabelBinRetinaMNIST(medmnist.dataset.RetinaMNIST):
     '''
-    Implements label binning for RetinaMNIST dataset.
-
-    Preprocess the target data as the following:
-        Grade – 0: label = [0,0,0,0]
-        Grade – 1: label = [1,0,0,0]
-        Grade – 2: label = [1,1,0,0]
-        Grade – 3: label = [1,1,1,0]
-        Grade – 4: label = [1,1,1,1]
+    Implements the label binning for RetinaMNIST dataset.
+    Each binary label b_i indicates whether this sample exceeds the grade r_i
+    Preprocess the target data in the following way:
+    Grade 0: label = [0,0,0,0]
+    Grade 2: label = [1,1,0,0]
+    Grade 4: label = [1,1,1,1]
     '''
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

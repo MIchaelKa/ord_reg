@@ -37,6 +37,8 @@ def run_training(cfg: DictConfig):
     trainer = Trainer(cfg, model, device, criterion, optimizer, scheduler, evaluator, writer)
     trainer.fit(train_loader, val_loader, cfg.train.num_epochs)
 
+    # trainer.val_epoch(val_loader) 
+
     if cfg.save_checkpoint:
         test_loader = get_test_data(cfg)
         trainer.predict(test_loader)

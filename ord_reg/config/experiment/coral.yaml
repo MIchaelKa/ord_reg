@@ -12,7 +12,7 @@ criterion:
   
 
 evaluator:
-  _target_: eval.LabelBinEvaluator
+  _target_: eval.CoralEvaluator
 
 model:
   last_fc:

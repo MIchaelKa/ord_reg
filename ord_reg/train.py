@@ -23,7 +23,7 @@ class Trainer():
         logger.info('Start training...')
 
         val_best_score = 0
-        val_best_epoch = 0
+        val_best_epoch = -1
 
         for epoch in range(num_epochs):
             self.train_epoch(epoch, train_loader)
@@ -33,10 +33,14 @@ class Trainer():
             self.writer.add_scalar('val/qwk', qwk, epoch)
             self.writer.add_scalar('val/loss', loss, epoch)
 
-            logger.info('Epoch: {:>2d}, acc = {:.5f}, qwk = {:.5f}'.format(epoch, acc, qwk))
+            logger.info('Epoch: {:>2d}, loss = {:.5f}, acc = {:.5f}, qwk = {:.5f}'.
+                format(epoch, loss, acc, qwk))
 
-            if qwk > val_best_score:
-                val_best_score = qwk
+            # we can choose any of those [-loss, acc, qwk] for saving best model
+            score = qwk
+
+            if score > val_best_score or val_best_epoch == -1:
+                val_best_score = score
                 val_best_epoch = epoch
 
                 if self.config.save_checkpoint:
@@ -100,7 +104,7 @@ class Trainer():
                 y_batch = y_batch.to(self.device)
                 
                 output = self.model(x_batch)
-                loss = self.criterion(output, y_batch.squeeze())
+                loss = self.criterion(output, y_batch)
 
                 outputs.append(output)
                 y_true.append(y_batch)

@@ -3,7 +3,7 @@ dataset:
   _target_: dataset.LabelBinRetinaMNIST
   download: true
 
-batch_size_train: 32
-batch_size_val: 32
+batch_size_train: 128
+batch_size_val: 128
 dataloader_workers: 0
 num_epochs: 5
